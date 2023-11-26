@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-small-cmp',
@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
   imports: [CommonModule],
   template: `
     <div>
-      <h2>Small Component</h2>
+      <h3>{{ title }}</h3>
       <input placeholder="input doesn't work yet" />
     </div>
   `,
@@ -18,4 +18,6 @@ import { Component } from '@angular/core';
     }
   `,
 })
-export class SmallCmpComponent {}
+export class SmallCmpComponent {
+  @Input({ required: true }) title!: string;
+}
