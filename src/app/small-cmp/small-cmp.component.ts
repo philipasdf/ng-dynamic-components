@@ -15,6 +15,7 @@ import { Component, Input } from '@angular/core';
     div {
       background-color: lightgray;
       padding: 1rem;
+      margin: 1rem;
     }
   `,
 })

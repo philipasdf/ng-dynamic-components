@@ -2,6 +2,7 @@ import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import { DynCmpService } from './dyn-cmp.service';
+import { SmallCmpComponent } from './small-cmp/small-cmp.component';
 
 @Component({
   selector: 'app-formular-builder',
@@ -10,25 +11,27 @@ import { DynCmpService } from './dyn-cmp.service';
   template: `
     <div>
       <h2>Formular Builder</h2>
-      <ng-container *ngComponentOutlet="currentCmp.component; inputs: currentCmp.inputs" />
-      <button (click)="displayNextCmp()">Next</button>
+
+      @for (cmp of cmpConfigService.getComponents(); track cmp.id) {
+      <ng-container *ngComponentOutlet="cmp.component; inputs: cmp.inputs" />
+      }
+
+      <div>
+        <button (click)="addCmp()">Add</button>
+      </div>
     </div>
   `,
 })
 export class FormularBuilderComponent {
-  private cmpList = inject(DynCmpService).getComponents();
+  cmpConfigService = inject(DynCmpService);
 
-  private currentCmpIndex = 0;
-
-  get currentCmp() {
-    return this.cmpList[this.currentCmpIndex];
-  }
-
-  displayNextCmp() {
-    this.currentCmpIndex++;
-    // Reset the current ad index back to `0` when we reach the end of an array.
-    if (this.currentCmpIndex === this.cmpList.length) {
-      this.currentCmpIndex = 0;
-    }
+  addCmp() {
+    this.cmpConfigService.addComponent({
+      id: 'dajdfl',
+      component: SmallCmpComponent,
+      inputs: {
+        title: 'asdölfjkasd',
+      },
+    });
   }
 }
