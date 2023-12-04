@@ -2,8 +2,9 @@ import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { cloneDeep } from 'lodash';
 import { ComponentConfig, DynCmpService } from './dyn-cmp.service';
-import { SmallCmpComponent } from './small-cmp/small-cmp.component';
+import { UeberschriftComponent } from './form-components/ueberschrift.component';
 
 @Component({
   selector: 'app-formular-builder',
@@ -24,7 +25,12 @@ import { SmallCmpComponent } from './small-cmp/small-cmp.component';
 
       <div>
         <button (click)="addCmp()">Add</button>
+        <button (click)="onShowPreview()">Preview</button>
       </div>
+
+      @if(!!configPreview) { @for (cmp of configPreview; track cmp.id) {
+      <ng-container *ngComponentOutlet="cmp.component; inputs: cmp.inputs" />
+      } }
     </div>
   `,
 })
@@ -32,13 +38,14 @@ export class FormularBuilderComponent {
   cmpConfigService = inject(DynCmpService);
 
   configDragList = this.cmpConfigService.getComponents();
+  configPreview: ComponentConfig[] | null = null;
 
   addCmp() {
     this.cmpConfigService.addComponent({
       id: 'dajdfl',
-      component: SmallCmpComponent,
+      component: UeberschriftComponent,
       inputs: {
-        title: 'asdölfjkasd',
+        modus: 'wysiwyg',
       },
     });
   }
@@ -51,5 +58,16 @@ export class FormularBuilderComponent {
     } else {
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
     }
+  }
+
+  onShowPreview() {
+    console.log('Print Component Config in Console');
+    console.log(this.configDragList);
+    this.configPreview = cloneDeep(this.configDragList);
+    this.configPreview = this.configPreview.map((c) => {
+      c.inputs!['modus'] = 'formular';
+
+      return c;
+    });
   }
 }
