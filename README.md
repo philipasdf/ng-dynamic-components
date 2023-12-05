@@ -1,3 +1,8 @@
+# Probleme
+
+- Wie krieg ich Daten aus den dynamisch erstellten Components in Echtzeit? Heißt bei jedem Buchstaben, den der User in ein Textfeld eintippt.
+- Es sind dynamisch erstellte Formularfelder. Wer löst die Validation (blur, submit, change) wie aus?
+
 # NgDynamicComponents
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
