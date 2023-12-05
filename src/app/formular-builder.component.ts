@@ -62,7 +62,12 @@ export class FormularBuilderComponent {
 
   onShowPreview() {
     console.log('Print Component Config in Console');
-    console.log(this.configDragList);
+    console.log(
+      this.configDragList.forEach((c) => {
+        // TODO wie kriege ich die aktuelle Konfiguration aus den wysiwyg-Komponenten raus??
+        console.log(c.component);
+      })
+    );
     this.configPreview = cloneDeep(this.configDragList);
     this.configPreview = this.configPreview.map((c) => {
       c.inputs!['modus'] = 'formular';
