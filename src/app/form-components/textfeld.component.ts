@@ -49,9 +49,7 @@ export class TextfeldComponent implements OnInit {
       }
     }
 
-    this.frage.valueChanges.subscribe((value) => {
-      console.log('iwas hat sich geändert', value);
-    });
+    // TODO formControl muss an das übergeordnete form angehängt werden
   }
 
   testForm() {

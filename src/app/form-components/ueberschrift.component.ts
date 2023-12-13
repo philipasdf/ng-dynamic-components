@@ -2,7 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { DataService } from '../data.service';
+import { DynoFormsService } from '../dyno-forms.service';
 
 @Component({
   selector: 'app-ueberschrift',
@@ -13,44 +13,24 @@ import { DataService } from '../data.service';
     <div class="component-marker">
       <label>Überschrift</label>
       <input [formControl]="ueberschrift" placeholder="Überschrift eingeben" />
-      <div>
-        <label>Pflichtfeld</label>
-        <input [formControl]="pflichtfeld" type="checkbox" />
-      </div>
-      <button (click)="testForm()">TEST</button>
     </div>
     } @else {
-    <h3>{{ title }}</h3>
+    <h3>{{ ueberschrift.value }}</h3>
     }
   `,
 })
 export class UeberschriftComponent {
   @Input({ required: true }) modus!: 'wysiwyg' | 'formular';
-  @Input({ required: false }) title?: string;
 
+  // ob das FormControl hier drin erstellt wird oder von außen reingegeben wird, ist egal
   ueberschrift: FormControl<string> = this.fb.nonNullable.control({ value: '', disabled: false });
-  pflichtfeld: FormControl<boolean> = this.fb.nonNullable.control({ value: true, disabled: false });
 
-  dataService = inject(DataService);
+  formService = inject(DynoFormsService);
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+    // wichtig ist nur, dass das FC in die FG reinkommt, damit man von überall an den Form-Status rankommt
+    this.formService.rootForm.addControl('ueberschrift123', this.ueberschrift);
 
-  testForm() {
-    console.log(this.ueberschrift.value);
-
-    console.log('data from service (uberschrift component)', this.dataService.getData());
-
-    console.log(this.pflichtfeld.value);
-
-    /**
-     * Die Component soll eine Konfiguration zusammenstellen:
-     *
-     */
-    const exampleConfig = {
-      componentName: 'Ueberschrift',
-      inputs: {
-        ueberschrift: 'Eingegebene Überschrift',
-      },
-    };
+    // TODO: Plan: jede einzelne Komponente erzeugt eine eigene FormGroup
   }
 }

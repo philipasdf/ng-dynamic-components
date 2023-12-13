@@ -2,9 +2,8 @@ import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { cloneDeep } from 'lodash';
-import { ComponentConfig, DynCmpService } from './dyn-cmp.service';
-import { UeberschriftComponent } from './form-components/ueberschrift.component';
+import { ComponentConfig } from './dyn-cmp.service';
+import { DynoFormsService, FrageRendered, FragebogenConfigRendered } from './dyno-forms.service';
 
 @Component({
   selector: 'app-formular-builder',
@@ -14,11 +13,16 @@ import { UeberschriftComponent } from './form-components/ueberschrift.component'
     <div>
       <h2>Formular Builder</h2>
 
-      <div cdkDropList #formList="cdkDropList" [cdkDropListData]="configDragList" (cdkDropListDropped)="drop($event)">
-        @for (cmp of configDragList; track cmp.id) {
+      <div
+        cdkDropList
+        #formList="cdkDropList"
+        [cdkDropListData]="fragebogenConfig.fragen"
+        (cdkDropListDropped)="drop($event)"
+      >
+        @for (frage of fragebogenConfig.fragen; track frage.index) {
         <div class="border-blue" cdkDrag>
           <button cdkDragHandle>Drag&Drop Handle</button>
-          <ng-container *ngComponentOutlet="cmp.component; inputs: cmp.inputs" />
+          <ng-container *ngComponentOutlet="frage.componentConfig.component; inputs: { modus: 'wysiwyg' }" />
         </div>
         }
       </div>
@@ -29,28 +33,22 @@ import { UeberschriftComponent } from './form-components/ueberschrift.component'
       </div>
 
       @if(!!configPreview) { @for (cmp of configPreview; track cmp.id) {
-      <ng-container *ngComponentOutlet="cmp.component; inputs: cmp.inputs" />
+      <ng-container *ngComponentOutlet="cmp.component; inputs: { modus: 'formular' }" />
       } }
     </div>
   `,
 })
 export class FormularBuilderComponent {
-  cmpConfigService = inject(DynCmpService);
+  dynoFormsService = inject(DynoFormsService);
 
-  configDragList = this.cmpConfigService.getComponents();
+  fragebogenConfig: FragebogenConfigRendered = this.dynoFormsService.getFragebogenConfig();
   configPreview: ComponentConfig[] | null = null;
 
   addCmp() {
-    this.cmpConfigService.addComponent({
-      id: 'dajdfl',
-      component: UeberschriftComponent,
-      inputs: {
-        modus: 'wysiwyg',
-      },
-    });
+    this.dynoFormsService.addComponent();
   }
 
-  drop(event: CdkDragDrop<ComponentConfig[]>) {
+  drop(event: CdkDragDrop<FrageRendered[]>) {
     console.log('component drag queen', event);
 
     if (event.previousContainer === event.container) {
@@ -62,17 +60,8 @@ export class FormularBuilderComponent {
 
   onShowPreview() {
     console.log('Print Component Config in Console');
-    console.log(
-      this.configDragList.forEach((c) => {
-        // TODO wie kriege ich die aktuelle Konfiguration aus den wysiwyg-Komponenten raus??
-        console.log(c.component);
-      })
-    );
-    this.configPreview = cloneDeep(this.configDragList);
-    this.configPreview = this.configPreview.map((c) => {
-      c.inputs!['modus'] = 'formular';
-
-      return c;
-    });
+    const buildedForm = this.dynoFormsService.rootForm;
+    const ueberschrift1 = this.dynoFormsService.rootForm.controls['ueberschrift123'].value;
+    debugger;
   }
 }

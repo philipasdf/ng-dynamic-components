@@ -33,8 +33,14 @@ export class DynCmpService {
     return this.configs;
   }
 
-  addComponent(cmp: ComponentConfig) {
-    this.configs.push(cmp);
+  addComponent() {
+    this.configs.push({
+      id: 'dajdfl',
+      component: UeberschriftComponent,
+      inputs: {
+        modus: 'wysiwyg',
+      },
+    });
   }
 }
 
