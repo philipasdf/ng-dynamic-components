@@ -1,0 +1,27 @@
+<div>
+    <h2>Formular Builder</h2>
+    <h3>Fragebogen Name: {{fragebogenConfig.fragebogenName}}</h3>
+
+    <div
+      cdkDropList
+      #formList="cdkDropList"
+      [cdkDropListData]="fragebogenConfig.fragen"
+      (cdkDropListDropped)="drop($event)"
+    >
+      @for (frage of fragebogenConfig.fragen; track frage.order) {
+      <div class="border-blue" cdkDrag>
+        <button cdkDragHandle>Drag&Drop Handle</button>
+        <ng-container *ngComponentOutlet="frage.componentConfig.component; inputs: { modus: 'wysiwyg' }" />
+      </div>
+      }
+    </div>
+
+    <div>
+      <button (click)="addCmp()">Add</button>
+      <button (click)="onShowPreview()">Preview</button>
+    </div>
+
+    @if(!!configPreview) { @for (cmp of configPreview; track cmp.id) {
+    <ng-container *ngComponentOutlet="cmp.component; inputs: { modus: 'formular' }" />
+    } }
+  </div>

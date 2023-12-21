@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DynoFormsService } from '../dyno-forms.service';
 
 @Component({
@@ -22,15 +22,25 @@ import { DynoFormsService } from '../dyno-forms.service';
 export class UeberschriftComponent {
   @Input({ required: true }) modus!: 'wysiwyg' | 'formular';
 
-  // ob das FormControl hier drin erstellt wird oder von außen reingegeben wird, ist egal
-  ueberschrift: FormControl<string> = this.fb.nonNullable.control({ value: '', disabled: false });
+  ueberschrift: FormControl<string>;
 
   formService = inject(DynoFormsService);
 
-  constructor(private fb: FormBuilder) {
-    // wichtig ist nur, dass das FC in die FG reinkommt, damit man von überall an den Form-Status rankommt
-    this.formService.rootForm.addControl('ueberschrift123', this.ueberschrift);
+  constructor() {
 
-    // TODO: Plan: jede einzelne Komponente erzeugt eine eigene FormGroup
+    // TODO value reinbekommen
+    this.ueberschrift = new FormControl({
+      value: '',
+      disabled: false
+    }, {nonNullable: true});
+
+    
+    const ueberschriftFormGroup: FormGroup = new FormGroup({
+      ueberschrift: this.ueberschrift
+    })
+
+
+    // TODO order reinbekommen
+    this.formService.rootForm.addControl('ueberschrift123', ueberschriftFormGroup);
   }
 }

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DataService } from '../data.service';
-import { TextfeldConfig } from '../dyn-cmp.service';
 
 @Component({
   selector: 'app-textfeld',
@@ -29,7 +28,7 @@ import { TextfeldConfig } from '../dyn-cmp.service';
 export class TextfeldComponent implements OnInit {
   @Input({ required: true }) modus!: 'wysiwyg' | 'formular';
 
-  @Input({ required: false }) config?: TextfeldConfig;
+  @Input({ required: false }) config?: any;
 
   // wysiwyg
   frage: FormControl<string> = this.fb.nonNullable.control({ value: '', disabled: false });
