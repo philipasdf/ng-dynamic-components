@@ -1,8 +1,8 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DataService } from '../data.service';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DynoFormsService } from '../dyno-forms.service';
 
 @Component({
   selector: 'app-textfeld',
@@ -17,7 +17,6 @@ import { DataService } from '../data.service';
         <label>Pflichtfeld</label>
         <input [formControl]="pflichtfeld" type="checkbox" />
       </div>
-      <button (click)="testForm()">TEST</button>
     </div>
     } @else {
     <p>{{ config!.frage }}{{ config!.pflichtfeld ? '*' : '' }}</p>
@@ -28,45 +27,48 @@ import { DataService } from '../data.service';
 export class TextfeldComponent implements OnInit {
   @Input({ required: true }) modus!: 'wysiwyg' | 'formular';
 
-  @Input({ required: false }) config?: any;
+  @Input({ required: false }) order!: number;
+
+  @Input({ required: false }) config?: any; // wird noch Typ TextfeldConfig
 
   // wysiwyg
-  frage: FormControl<string> = this.fb.nonNullable.control({ value: '', disabled: false });
-  pflichtfeld: FormControl<boolean> = this.fb.nonNullable.control({ value: true, disabled: false });
+  frage!: FormControl<string>;
+  pflichtfeld!: FormControl<boolean>;
 
   // formular
-  antwortTextarea: FormControl<string> = this.fb.nonNullable.control({ value: '', disabled: false });
+  antwortTextarea!: FormControl<string>;
 
-  dataService = inject(DataService);
-
-  constructor(private fb: FormBuilder) {}
+  formService = inject(DynoFormsService);
 
   ngOnInit(): void {
+    console.log('TextfeldComponent config', this.config);
+
     if (this.modus === 'formular') {
       if (this.config!.pflichtfeld) {
         this.antwortTextarea.addValidators([Validators.required]);
       }
+    } else {
+      this.frage = new FormControl(
+        {
+          value: this.config.frage,
+          disabled: false,
+        },
+        { nonNullable: true }
+      );
+      this.pflichtfeld = new FormControl(
+        {
+          value: this.config.pflichtfeld,
+          disabled: false,
+        },
+        { nonNullable: true }
+      );
+
+      const textfeldFormGroup: FormGroup = new FormGroup({
+        frage: this.frage,
+        pflichtfeld: this.pflichtfeld,
+      });
+
+      this.formService.rootForm.addControl('textfeld' + this.order, textfeldFormGroup);
     }
-
-    // TODO formControl muss an das übergeordnete form angehängt werden
-  }
-
-  testForm() {
-    console.log(this.frage.value);
-    this.dataService.setData(this.frage.value);
-
-    console.log('data from service (textfeldcomponent)', this.dataService.getData());
-
-    console.log(this.pflichtfeld.value);
-
-    /**
-     * Die Component soll eine Konfiguration zusammenstellen:
-     *
-     */
-    // const config: TextfeldConfig = {
-    //   _tag: 'Textfeld',
-    //   frage: this.frage.value,
-    //   pflichtfeld: this.pflichtfeld.value,
-    // };
   }
 }

@@ -2,14 +2,14 @@ import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { DynoFormsService, ComponentConfig } from '../dyno-forms.service';
+import { ComponentConfig, DynoFormsService } from '../dyno-forms.service';
 import { Frage, Fragebogen } from '../model/fragebogen';
 
 @Component({
   selector: 'app-formular-builder',
   standalone: true,
   imports: [NgComponentOutlet, AsyncPipe, DragDropModule],
-  templateUrl: 'formular-builder.component.html'
+  templateUrl: 'formular-builder.component.html',
 })
 export class FormularBuilderComponent {
   dynoFormsService = inject(DynoFormsService);
@@ -36,6 +36,7 @@ export class FormularBuilderComponent {
     console.log('Print Component Config in Console');
     const buildedForm = this.dynoFormsService.rootForm;
     const ueberschrift1 = this.dynoFormsService.rootForm.controls['ueberschrift123'].value;
-    debugger;
+
+    // an dieser stelle die gesamte config mit den aktuellen form values updaten?
   }
 }

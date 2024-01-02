@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DynoFormsService } from '../dyno-forms.service';
 
 @Component({
@@ -19,28 +19,32 @@ import { DynoFormsService } from '../dyno-forms.service';
     }
   `,
 })
-export class UeberschriftComponent {
+export class UeberschriftComponent implements OnInit {
   @Input({ required: true }) modus!: 'wysiwyg' | 'formular';
 
-  ueberschrift: FormControl<string>;
+  @Input({ required: true }) order!: number;
+
+  @Input({ required: false }) config?: any; // wird noch Typ Ueberschriftconfig
+
+  ueberschrift!: FormControl<string>;
 
   formService = inject(DynoFormsService);
 
-  constructor() {
+  ngOnInit() {
+    console.log('UeberschriftComponent config', this.config);
 
-    // TODO value reinbekommen
-    this.ueberschrift = new FormControl({
-      value: '',
-      disabled: false
-    }, {nonNullable: true});
+    this.ueberschrift = new FormControl(
+      {
+        value: this.config.ueberschrift,
+        disabled: false,
+      },
+      { nonNullable: true }
+    );
 
-    
     const ueberschriftFormGroup: FormGroup = new FormGroup({
-      ueberschrift: this.ueberschrift
-    })
+      ueberschrift: this.ueberschrift,
+    });
 
-
-    // TODO order reinbekommen
-    this.formService.rootForm.addControl('ueberschrift123', ueberschriftFormGroup);
+    this.formService.rootForm.addControl('ueberschrift' + this.order, ueberschriftFormGroup);
   }
 }
